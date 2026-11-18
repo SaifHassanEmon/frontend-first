@@ -17,7 +17,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { PageHeader, DemoTag, RiskBadge, StatusBadge, Confidence, Panel, KpiCard } from "@/components/app/ui";
-import { counterfeitListings, type CounterfeitListing } from "@/data/mock";
+import { useApp } from "@/lib/store";
+import { type CounterfeitListing } from "@/data/mock";
 import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -27,9 +28,12 @@ export const Route = createFileRoute("/counterfeit")({
 });
 
 function CounterfeitDetectionPage() {
+  const counterfeitListings = useApp((s) => s.counterfeits);
+  const updateStatus = useApp((s) => s.updateCounterfeitStatus);
+
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-  const [activeItem, setActiveItem] = useState<CounterfeitListing | null>(counterfeitListings[0]);
+  const [activeItem, setActiveItem] = useState<CounterfeitListing | null>(counterfeitListings[0] ?? null);
 
   const filteredListings = useMemo(() => {
     return counterfeitListings.filter((c) => {
@@ -46,7 +50,7 @@ function CounterfeitDetectionPage() {
       }
       return true;
     });
-  }, [search, selectedStatus]);
+  }, [search, selectedStatus, counterfeitListings]);
 
   return (
     <div className="mx-auto max-w-[1450px] space-y-4">
@@ -274,7 +278,10 @@ function CounterfeitDetectionPage() {
               {/* Actions */}
               <div className="space-y-2 pt-2">
                 <button
-                  onClick={() => alert(`Cease & Desist / Platform Takedown generated for ${activeItem.seller} on ${activeItem.platform}`)}
+                  onClick={() => {
+                    updateStatus(activeItem.id, "Takedown Issued");
+                    alert(`Cease & Desist / Platform Takedown issued for ${activeItem.seller} on ${activeItem.platform}. Status updated.`);
+                  }}
                   className="flex w-full items-center justify-center gap-1.5 rounded-md bg-critical py-2 text-xs font-medium text-white hover:bg-critical/90"
                 >
                   <ShieldAlert className="size-3.5" /> Generate Legal Takedown

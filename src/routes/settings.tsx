@@ -16,6 +16,7 @@ import {
   SlidersHorizontal,
 } from "lucide-react";
 import { PageHeader, DemoTag, Panel } from "@/components/app/ui";
+import { useApp } from "@/lib/store";
 import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -25,25 +26,38 @@ export const Route = createFileRoute("/settings")({
 });
 
 function SettingsPage() {
+  const currentSettings = useApp((s) => s.settings);
+  const updateSettings = useApp((s) => s.updateSettings);
+
   const [tab, setTab] = useState<"scoring" | "notifications" | "api" | "profile">("scoring");
 
   // Scoring Weights
-  const [regulatoryWeight, setRegulatoryWeight] = useState(40);
-  const [spofWeight, setSpofWeight] = useState(30);
-  const [disruptionWeight, setDisruptionWeight] = useState(20);
-  const [counterfeitWeight, setCounterfeitWeight] = useState(10);
+  const [regulatoryWeight, setRegulatoryWeight] = useState(currentSettings?.regulatoryWeight ?? 40);
+  const [spofWeight, setSpofWeight] = useState(currentSettings?.spofWeight ?? 30);
+  const [disruptionWeight, setDisruptionWeight] = useState(currentSettings?.disruptionWeight ?? 20);
+  const [counterfeitWeight, setCounterfeitWeight] = useState(currentSettings?.counterfeitWeight ?? 10);
 
   // Notifications
-  const [notifyCritical, setNotifyCritical] = useState(true);
-  const [notifySlack, setNotifySlack] = useState(true);
-  const [notifyDailyDigest, setNotifyDailyDigest] = useState(true);
-  const [slackWebhook, setSlackWebhook] = useState("https://hooks.slack.com/services/T00/B00/XXXXXX");
+  const [notifyCritical, setNotifyCritical] = useState(currentSettings?.notifyCritical ?? true);
+  const [notifySlack, setNotifySlack] = useState(currentSettings?.notifySlack ?? true);
+  const [notifyDailyDigest, setNotifyDailyDigest] = useState(currentSettings?.notifyDailyDigest ?? true);
+  const [slackWebhook, setSlackWebhook] = useState(currentSettings?.slackWebhook ?? "https://hooks.slack.com/services/T00/B00/XXXXXX");
 
   // API Keys state
   const [showKeys, setShowKeys] = useState(false);
   const [savedToast, setSavedToast] = useState(false);
 
   const handleSave = () => {
+    updateSettings({
+      regulatoryWeight,
+      spofWeight,
+      disruptionWeight,
+      counterfeitWeight,
+      notifyCritical,
+      notifySlack,
+      notifyDailyDigest,
+      slackWebhook,
+    });
     setSavedToast(true);
     setTimeout(() => setSavedToast(false), 2500);
   };

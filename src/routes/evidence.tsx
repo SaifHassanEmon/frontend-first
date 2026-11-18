@@ -16,7 +16,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { PageHeader, DemoTag, StatusBadge, Confidence, Panel, KpiCard } from "@/components/app/ui";
-import { evidence } from "@/data/mock";
+import { useApp } from "@/lib/store";
 import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -25,20 +25,21 @@ export const Route = createFileRoute("/evidence")({
   component: EvidenceExplorerPage,
 });
 
-type EvidenceItem = (typeof evidence)[number];
-
 function EvidenceExplorerPage() {
+  const evidenceList = useApp((s) => s.evidence);
+  const verifyEvidence = useApp((s) => s.verifyEvidence);
+
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState<string>("ALL");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-  const [activeItem, setActiveItem] = useState<EvidenceItem | null>(evidence[0]);
+  const [activeItem, setActiveItem] = useState<(typeof evidenceList)[number] | null>(evidenceList[0] ?? null);
 
   const docTypes = useMemo(() => {
-    return ["ALL", ...Array.from(new Set(evidence.map((e) => e.type)))];
-  }, []);
+    return ["ALL", ...Array.from(new Set(evidenceList.map((e) => e.type)))];
+  }, [evidenceList]);
 
   const filteredItems = useMemo(() => {
-    return evidence.filter((item) => {
+    return evidenceList.filter((item) => {
       if (selectedType !== "ALL" && item.type !== selectedType) return false;
       if (selectedStatus !== "ALL" && item.status !== selectedStatus) return false;
       if (search.trim()) {
@@ -53,7 +54,7 @@ function EvidenceExplorerPage() {
       }
       return true;
     });
-  }, [search, selectedType, selectedStatus]);
+  }, [search, selectedType, selectedStatus, evidenceList]);
 
   return (
     <div className="mx-auto max-w-[1450px] space-y-4">
@@ -292,7 +293,9 @@ function EvidenceExplorerPage() {
               {/* Actions */}
               <div className="space-y-2 pt-2">
                 <button
-                  onClick={() => alert(`Marked ${activeItem.id} as verified by lead risk analyst.`)}
+                  onClick={() => {
+                    verifyEvidence(activeItem.id);
+                  }}
                   className="flex w-full items-center justify-center gap-1.5 rounded-md bg-primary py-2 text-xs font-medium text-primary-foreground hover:bg-primary/90"
                 >
                   <ShieldCheck className="size-3.5" /> Confirm Verified Authenticity
