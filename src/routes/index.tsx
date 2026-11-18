@@ -24,7 +24,7 @@ function Overview() {
   return (
     <div className="mx-auto max-w-[1400px] space-y-4">
       <PageHeader title="Global Risk Overview" subtitle="Monitor emerging threats across global commerce networks." actions={<DemoTag />} />
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">{kpis.map((k, i) => <KpiCard key={k.label} {...k} icon={icons[i]} />)}</div>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">{kpis.map((k, i) => <KpiCard key={k.label} {...k} icon={icons[i] ?? Activity} />)}</div>
       <div className="grid gap-4 xl:grid-cols-3">
         <Panel title="Global Risk Map" className="xl:col-span-2" bodyClass="p-0" action={<div className="flex gap-3 text-[11px] text-muted-foreground">{(["critical", "high", "medium", "low"] as const).map((s) => <span key={s} className="flex items-center gap-1 capitalize"><span className="size-2 rounded-full" style={{ background: sevColor[s] }} />{s}</span>)}</div>}>
           <div className="relative h-[360px] overflow-hidden rounded-b-lg">

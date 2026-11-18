@@ -27,7 +27,7 @@ function Page() {
   const list = investigations.filter((i) => (!q || (i.title + i.id).toLowerCase().includes(q.toLowerCase())) && (!d || i.domain === d) && (!s || i.severity === s) && (!st || i.status === st));
 
   const submit = (e: React.FormEvent) => {
-    e.preventDefault(); if (!form.name.trim()) return toast.error("Investigation name is required");
+    e.preventDefault(); if (!form.name.trim()) { toast.error("Investigation name is required"); return; }
     setRunning(true);
     setTimeout(() => {
       const score = 55 + ((form.name.length * 7) % 40);

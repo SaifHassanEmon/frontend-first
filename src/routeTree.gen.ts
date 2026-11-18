@@ -10,13 +10,47 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CounterfeitRouteImport } from './routes/counterfeit'
+import { Route as DataSourcesRouteImport } from './routes/data-sources'
+import { Route as DisruptionsRouteImport } from './routes/disruptions'
+import { Route as EvidenceRouteImport } from './routes/evidence'
+import { Route as GraphRouteImport } from './routes/graph'
 import { Route as InvestigationsRouteImport } from './routes/investigations'
 import { Route as ProductRecallRouteImport } from './routes/product-recall'
+import { Route as ReportsRouteImport } from './routes/reports'
 import { Route as RiskMapRouteImport } from './routes/risk-map'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as SuppliersRouteImport } from './routes/suppliers'
+import { Route as UnknownExposureRouteImport } from './routes/unknown-exposure'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CounterfeitRoute = CounterfeitRouteImport.update({
+  id: '/counterfeit',
+  path: '/counterfeit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataSourcesRoute = DataSourcesRouteImport.update({
+  id: '/data-sources',
+  path: '/data-sources',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DisruptionsRoute = DisruptionsRouteImport.update({
+  id: '/disruptions',
+  path: '/disruptions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EvidenceRoute = EvidenceRouteImport.update({
+  id: '/evidence',
+  path: '/evidence',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GraphRoute = GraphRouteImport.update({
+  id: '/graph',
+  path: '/graph',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvestigationsRoute = InvestigationsRouteImport.update({
@@ -29,44 +63,140 @@ const ProductRecallRoute = ProductRecallRouteImport.update({
   path: '/product-recall',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportsRoute = ReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RiskMapRoute = RiskMapRouteImport.update({
   id: '/risk-map',
   path: '/risk-map',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuppliersRoute = SuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnknownExposureRoute = UnknownExposureRouteImport.update({
+  id: '/unknown-exposure',
+  path: '/unknown-exposure',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/counterfeit': typeof CounterfeitRoute
+  '/data-sources': typeof DataSourcesRoute
+  '/disruptions': typeof DisruptionsRoute
+  '/evidence': typeof EvidenceRoute
+  '/graph': typeof GraphRoute
   '/investigations': typeof InvestigationsRoute
   '/product-recall': typeof ProductRecallRoute
+  '/reports': typeof ReportsRoute
   '/risk-map': typeof RiskMapRoute
+  '/settings': typeof SettingsRoute
+  '/suppliers': typeof SuppliersRoute
+  '/unknown-exposure': typeof UnknownExposureRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/counterfeit': typeof CounterfeitRoute
+  '/data-sources': typeof DataSourcesRoute
+  '/disruptions': typeof DisruptionsRoute
+  '/evidence': typeof EvidenceRoute
+  '/graph': typeof GraphRoute
   '/investigations': typeof InvestigationsRoute
   '/product-recall': typeof ProductRecallRoute
+  '/reports': typeof ReportsRoute
   '/risk-map': typeof RiskMapRoute
+  '/settings': typeof SettingsRoute
+  '/suppliers': typeof SuppliersRoute
+  '/unknown-exposure': typeof UnknownExposureRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/counterfeit': typeof CounterfeitRoute
+  '/data-sources': typeof DataSourcesRoute
+  '/disruptions': typeof DisruptionsRoute
+  '/evidence': typeof EvidenceRoute
+  '/graph': typeof GraphRoute
   '/investigations': typeof InvestigationsRoute
   '/product-recall': typeof ProductRecallRoute
+  '/reports': typeof ReportsRoute
   '/risk-map': typeof RiskMapRoute
+  '/settings': typeof SettingsRoute
+  '/suppliers': typeof SuppliersRoute
+  '/unknown-exposure': typeof UnknownExposureRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/investigations' | '/product-recall' | '/risk-map'
+  fullPaths:
+    | '/'
+    | '/counterfeit'
+    | '/data-sources'
+    | '/disruptions'
+    | '/evidence'
+    | '/graph'
+    | '/investigations'
+    | '/product-recall'
+    | '/reports'
+    | '/risk-map'
+    | '/settings'
+    | '/suppliers'
+    | '/unknown-exposure'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/investigations' | '/product-recall' | '/risk-map'
-  id: '__root__' | '/' | '/investigations' | '/product-recall' | '/risk-map'
+  to:
+    | '/'
+    | '/counterfeit'
+    | '/data-sources'
+    | '/disruptions'
+    | '/evidence'
+    | '/graph'
+    | '/investigations'
+    | '/product-recall'
+    | '/reports'
+    | '/risk-map'
+    | '/settings'
+    | '/suppliers'
+    | '/unknown-exposure'
+  id:
+    | '__root__'
+    | '/'
+    | '/counterfeit'
+    | '/data-sources'
+    | '/disruptions'
+    | '/evidence'
+    | '/graph'
+    | '/investigations'
+    | '/product-recall'
+    | '/reports'
+    | '/risk-map'
+    | '/settings'
+    | '/suppliers'
+    | '/unknown-exposure'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CounterfeitRoute: typeof CounterfeitRoute
+  DataSourcesRoute: typeof DataSourcesRoute
+  DisruptionsRoute: typeof DisruptionsRoute
+  EvidenceRoute: typeof EvidenceRoute
+  GraphRoute: typeof GraphRoute
   InvestigationsRoute: typeof InvestigationsRoute
   ProductRecallRoute: typeof ProductRecallRoute
+  ReportsRoute: typeof ReportsRoute
   RiskMapRoute: typeof RiskMapRoute
+  SettingsRoute: typeof SettingsRoute
+  SuppliersRoute: typeof SuppliersRoute
+  UnknownExposureRoute: typeof UnknownExposureRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -76,6 +206,41 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/counterfeit': {
+      id: '/counterfeit'
+      path: '/counterfeit'
+      fullPath: '/counterfeit'
+      preLoaderRoute: typeof CounterfeitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data-sources': {
+      id: '/data-sources'
+      path: '/data-sources'
+      fullPath: '/data-sources'
+      preLoaderRoute: typeof DataSourcesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/disruptions': {
+      id: '/disruptions'
+      path: '/disruptions'
+      fullPath: '/disruptions'
+      preLoaderRoute: typeof DisruptionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/evidence': {
+      id: '/evidence'
+      path: '/evidence'
+      fullPath: '/evidence'
+      preLoaderRoute: typeof EvidenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/graph': {
+      id: '/graph'
+      path: '/graph'
+      fullPath: '/graph'
+      preLoaderRoute: typeof GraphRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/investigations': {
@@ -92,6 +257,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductRecallRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reports': {
+      id: '/reports'
+      path: '/reports'
+      fullPath: '/reports'
+      preLoaderRoute: typeof ReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/risk-map': {
       id: '/risk-map'
       path: '/risk-map'
@@ -99,14 +271,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RiskMapRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/suppliers': {
+      id: '/suppliers'
+      path: '/suppliers'
+      fullPath: '/suppliers'
+      preLoaderRoute: typeof SuppliersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unknown-exposure': {
+      id: '/unknown-exposure'
+      path: '/unknown-exposure'
+      fullPath: '/unknown-exposure'
+      preLoaderRoute: typeof UnknownExposureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CounterfeitRoute: CounterfeitRoute,
+  DataSourcesRoute: DataSourcesRoute,
+  DisruptionsRoute: DisruptionsRoute,
+  EvidenceRoute: EvidenceRoute,
+  GraphRoute: GraphRoute,
   InvestigationsRoute: InvestigationsRoute,
   ProductRecallRoute: ProductRecallRoute,
+  ReportsRoute: ReportsRoute,
   RiskMapRoute: RiskMapRoute,
+  SettingsRoute: SettingsRoute,
+  SuppliersRoute: SuppliersRoute,
+  UnknownExposureRoute: UnknownExposureRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
