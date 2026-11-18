@@ -8,13 +8,6 @@ import {
   type Investigation,
   type CounterfeitListing,
 } from "@/data/mock";
-import {
-  addInvestigationFn,
-  updateInvestigationStatusFn,
-  updateCounterfeitStatusFn,
-  verifyEvidenceRecordFn,
-  saveSystemSettingsFn,
-} from "@/server/functions";
 
 export interface Notice {
   id: string;
@@ -44,11 +37,11 @@ interface State {
   notifications: Notice[];
 
   // Actions
-  addInvestigation: (i: Investigation) => Promise<void>;
-  updateInvestigationStatus: (id: string, status: Investigation["status"]) => Promise<void>;
-  updateCounterfeitStatus: (id: string, status: CounterfeitListing["status"]) => Promise<void>;
-  verifyEvidence: (id: string) => Promise<void>;
-  updateSettings: (s: SystemSettings) => Promise<void>;
+  addInvestigation: (i: Investigation) => void;
+  updateInvestigationStatus: (id: string, status: Investigation["status"]) => void;
+  updateCounterfeitStatus: (id: string, status: CounterfeitListing["status"]) => void;
+  verifyEvidence: (id: string) => void;
+  updateSettings: (s: SystemSettings) => void;
   decide: (id: string, d: "approved" | "rejected") => void;
   markAllRead: () => void;
   notify: (title: string) => void;
@@ -78,58 +71,32 @@ export const useApp = create<State>()(
         { id: "n3", title: "Weekly risk report is ready", time: "3h", read: true },
       ],
 
-      addInvestigation: async (i) => {
-        // Optimistic local update
+      addInvestigation: (i) => {
         set((s) => ({ investigations: [i, ...s.investigations] }));
         get().notify(`Created new investigation: ${i.title}`);
-        try {
-          await addInvestigationFn({ data: i });
-        } catch (e) {
-          console.warn("Background server save fallback to local storage:", e);
-        }
       },
 
-      updateInvestigationStatus: async (id, status) => {
+      updateInvestigationStatus: (id, status) => {
         set((s) => ({
           investigations: s.investigations.map((inv) => (inv.id === id ? { ...inv, status } : inv)),
         }));
-        try {
-          await updateInvestigationStatusFn({ data: { id, status } });
-        } catch (e) {
-          console.warn("Background server save fallback:", e);
-        }
       },
 
-      updateCounterfeitStatus: async (id, status) => {
+      updateCounterfeitStatus: (id, status) => {
         set((s) => ({
           counterfeits: s.counterfeits.map((item) => (item.id === id ? { ...item, status } : item)),
         }));
-        try {
-          await updateCounterfeitStatusFn({ data: { id, status } });
-        } catch (e) {
-          console.warn("Background server save fallback:", e);
-        }
       },
 
-      verifyEvidence: async (id) => {
+      verifyEvidence: (id) => {
         set((s) => ({
           evidence: s.evidence.map((ev) => (ev.id === id ? { ...ev, status: "Verified" } : ev)),
         }));
         get().notify(`Evidence record ${id} verified`);
-        try {
-          await verifyEvidenceRecordFn({ data: { id } });
-        } catch (e) {
-          console.warn("Background server save fallback:", e);
-        }
       },
 
-      updateSettings: async (settings) => {
+      updateSettings: (settings) => {
         set({ settings });
-        try {
-          await saveSystemSettingsFn({ data: settings });
-        } catch (e) {
-          console.warn("Background server save fallback:", e);
-        }
       },
 
       decide: (id, d) => set((s) => ({ matchDecisions: { ...s.matchDecisions, [id]: d } })),
@@ -142,6 +109,6 @@ export const useApp = create<State>()(
           ],
         })),
     }),
-    { name: "recallmesh-database", skipHydration: true },
+    { name: "recallmesh-local-db", skipHydration: true },
   ),
 );
