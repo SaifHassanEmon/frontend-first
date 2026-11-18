@@ -124,6 +124,159 @@ export const dataSources = [
   { name: "GDELT", desc: "Global news event and tone monitoring.", domain: "Disruption", type: "Open dataset" },
 ];
 
+export interface CounterfeitListing {
+  id: string;
+  targetProduct: string;
+  sku: string;
+  gtin: string;
+  platform: string;
+  seller: string;
+  region: string;
+  confidence: number;
+  priceDelta: string;
+  status: "Flagged" | "Takedown Issued" | "Under Review" | "Confirmed Fake";
+  anomalies: string[];
+  dateDetected: string;
+  evidenceRef: string;
+}
+
+export const counterfeitListings: CounterfeitListing[] = [
+  {
+    id: "CF-2026-081",
+    targetProduct: "UltraCharge 65W GaN Adapter",
+    sku: "UC-65W-BLK",
+    gtin: "0614141000012",
+    platform: "Global Express Market",
+    seller: "FastTech Electronics FZE",
+    region: "Dubai, UAE",
+    confidence: 96,
+    priceDelta: "-58% ($14.99 vs MSRP $35.99)",
+    status: "Confirmed Fake",
+    anomalies: ["Weight is 82g (OEM 120g)", "Missing UL certification stamp", "Duplicate GTIN barcode barcode", "Substandard thermal paste"],
+    dateDetected: "2026-11-16",
+    evidenceRef: "EV-3372",
+  },
+  {
+    id: "CF-2026-082",
+    targetProduct: "ProAudio Wireless Earbuds V3",
+    sku: "PAW-V3-SIL",
+    gtin: "0614141000088",
+    platform: "Apex B2B Wholesale",
+    seller: "Shenzhen Apex Trade Ltd",
+    region: "Shenzhen, China",
+    confidence: 89,
+    priceDelta: "-45% ($39.00 vs MSRP $79.00)",
+    status: "Takedown Issued",
+    anomalies: ["Bluetooth MAC prefix unallocated", "Silk-screen logo font kerning error", "Lithium battery lacks IEC 62133 label"],
+    dateDetected: "2026-11-14",
+    evidenceRef: "EV-3380",
+  },
+  {
+    id: "CF-2026-083",
+    targetProduct: "Industrial 24V Power Relay Unit",
+    sku: "IND-RELAY-24V",
+    gtin: "0614141000190",
+    platform: "EuroParts Direct",
+    seller: "Continental Surplus Sp. z o.o.",
+    region: "Katowice, Poland",
+    confidence: 78,
+    priceDelta: "-30% ($22.50 vs MSRP $32.00)",
+    status: "Under Review",
+    anomalies: ["Contact resistance deviates +24%", "Re-stamped date code from 2021", "Unsealed protective casing"],
+    dateDetected: "2026-11-11",
+    evidenceRef: "EV-3365",
+  },
+  {
+    id: "CF-2026-084",
+    targetProduct: "AeroShield Ceramic Brake Pads",
+    sku: "AS-BP-440",
+    gtin: "0614141000215",
+    platform: "AutoParts Hub Online",
+    seller: "Veloce Spares Ltd",
+    region: "Manchester, UK",
+    confidence: 94,
+    priceDelta: "-62% ($18.00 vs MSRP $48.00)",
+    status: "Takedown Issued",
+    anomalies: ["Asbestos trace detected in friction material", "Holographic security seal non-reflective", "Non-compliant friction coefficient"],
+    dateDetected: "2026-11-09",
+    evidenceRef: "EV-3391",
+  },
+];
+
+export interface UnknownExposureItem {
+  id: string;
+  category: "Concentration Risk" | "Hidden Sub-tier" | "Regulatory Blind Spot" | "Sole Sourcing";
+  title: string;
+  tierDepth: number;
+  primaryEntity: string;
+  country: string;
+  exposureScore: number;
+  severity: Severity;
+  downstreamProducts: string[];
+  impactEstimate: string;
+  discoverySource: string;
+  recommendation: string;
+}
+
+export const unknownExposures: UnknownExposureItem[] = [
+  {
+    id: "EXP-901",
+    category: "Concentration Risk",
+    title: "Critical dependency on single Kaohsiung dielectric ceramic line",
+    tierDepth: 3,
+    primaryEntity: "Formosa Capacitor Ltd. (Sub-facility B)",
+    country: "Taiwan",
+    exposureScore: 89,
+    severity: "critical",
+    downstreamProducts: ["Smartphone A", "Electric Scooter B", "Power Bank C"],
+    impactEstimate: "Estimated $14.2M revenue at risk if stalled > 10 days",
+    discoverySource: "Import Customs Manifest ML entity resolution",
+    recommendation: "Qualify Monterrey Electro SA secondary line or activate reserve buffer stock.",
+  },
+  {
+    id: "EXP-902",
+    category: "Hidden Sub-tier",
+    title: "Undisclosed cobalt processing facility in Katanga corridor",
+    tierDepth: 4,
+    primaryEntity: "Kivu Mineral Refinery",
+    country: "DR Congo",
+    exposureScore: 84,
+    severity: "high",
+    downstreamProducts: ["BatteryPro XZ-100", "Smartphone A"],
+    impactEstimate: "High ESG/OECD compliance breach liability and consumer backlash",
+    discoverySource: "GLEIF corporate parentage traversal & NGO conflict mineral reports",
+    recommendation: "Issue immediate Tier-1 sub-supplier disclosure audit to BatteryPro Cells Co.",
+  },
+  {
+    id: "EXP-903",
+    category: "Regulatory Blind Spot",
+    title: "Expired EU RoHS 3 exemption on specialty soldering flux",
+    tierDepth: 2,
+    primaryEntity: "Mekong Bearings JSC",
+    country: "Vietnam",
+    exposureScore: 71,
+    severity: "medium",
+    downstreamProducts: ["Electric Scooter B"],
+    impactEstimate: "Potential EU customs impoundment of 4,200 finished units",
+    discoverySource: "EU Safety Gate cross-index & chemical compliance registry",
+    recommendation: "Demand updated chemical laboratory test certificates within 5 business days.",
+  },
+  {
+    id: "EXP-904",
+    category: "Sole Sourcing",
+    title: "Proprietary microcontroller packaging single-tooled in Penang",
+    tierDepth: 2,
+    primaryEntity: "Penang Micro-Assembly Ltd",
+    country: "Malaysia",
+    exposureScore: 68,
+    severity: "high",
+    downstreamProducts: ["Router R2", "Smartphone A"],
+    impactEstimate: "Lead time buffer is only 14 days against 60-day tooling cycle",
+    discoverySource: "BOM deep-traversal cross-analysis",
+    recommendation: "Fund dual-tooling qualification at Guadalajara partner facility.",
+  },
+];
+
 export const copilotScript: Record<string, string> = {
   "Find products potentially affected by this battery recall.": "I traced component identities XZ-100, XZ100-L and supplier code BP-77 across your BOM and shipment data. 3 products show potential exposure: Smartphone A (98% confidence, confirmed demo match), Electric Scooter B (84%, potential) and Power Bank C (62%, needs verification). Estimated 12,400 units sit in Los Angeles DC-04.",
   "Identify hidden supplier dependencies.": "Formosa Capacitor Ltd. is a single-source tier-2 supplier for 4 tier-1 assemblers. 71% of your capacitor volume is concentrated in Taiwan. Monterrey Electro SA is a viable alternative with partial capability overlap.",
