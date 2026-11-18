@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as InvestigationsRouteImport } from './routes/investigations'
+import { Route as ProductRecallRouteImport } from './routes/product-recall'
+import { Route as RiskMapRouteImport } from './routes/risk-map'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const InvestigationsRoute = InvestigationsRouteImport.update({
+  id: '/investigations',
+  path: '/investigations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductRecallRoute = ProductRecallRouteImport.update({
+  id: '/product-recall',
+  path: '/product-recall',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RiskMapRoute = RiskMapRouteImport.update({
+  id: '/risk-map',
+  path: '/risk-map',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/investigations': typeof InvestigationsRoute
+  '/product-recall': typeof ProductRecallRoute
+  '/risk-map': typeof RiskMapRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/investigations': typeof InvestigationsRoute
+  '/product-recall': typeof ProductRecallRoute
+  '/risk-map': typeof RiskMapRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/investigations': typeof InvestigationsRoute
+  '/product-recall': typeof ProductRecallRoute
+  '/risk-map': typeof RiskMapRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/investigations' | '/product-recall' | '/risk-map'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/investigations' | '/product-recall' | '/risk-map'
+  id: '__root__' | '/' | '/investigations' | '/product-recall' | '/risk-map'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  InvestigationsRoute: typeof InvestigationsRoute
+  ProductRecallRoute: typeof ProductRecallRoute
+  RiskMapRoute: typeof RiskMapRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/investigations': {
+      id: '/investigations'
+      path: '/investigations'
+      fullPath: '/investigations'
+      preLoaderRoute: typeof InvestigationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product-recall': {
+      id: '/product-recall'
+      path: '/product-recall'
+      fullPath: '/product-recall'
+      preLoaderRoute: typeof ProductRecallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/risk-map': {
+      id: '/risk-map'
+      path: '/risk-map'
+      fullPath: '/risk-map'
+      preLoaderRoute: typeof RiskMapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  InvestigationsRoute: InvestigationsRoute,
+  ProductRecallRoute: ProductRecallRoute,
+  RiskMapRoute: RiskMapRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
