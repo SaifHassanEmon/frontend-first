@@ -14,20 +14,8 @@
 
 /*
  * Design system definition.
- *
- * The design lives in this file: oklch color tokens on the shadcn variables
- * (--background, --foreground, --primary, --secondary, --muted, --accent, ...) plus
- * new tokens as needed, font tokens, and custom styles and animations.
- *
- * The @theme inline block maps CSS custom properties to Tailwind utility
- * classes (e.g. --color-primary -> bg-primary, text-primary).
- *
- * The :root and .dark blocks define the actual color values using oklch.
- * All colors MUST use oklch format.
- *
- * To add a new semantic color:
- * 1. Add the variable to :root (light value) and .dark (dark value)
- * 2. Register it in @theme inline as --color-<name>: var(--<name>)
+ * The @theme inline block maps CSS custom properties to Tailwind utility classes.
+ * Colors defined using OKLCH with distinct :root (light) and .dark (dark) tokens.
  */
 
 @theme inline {
@@ -79,7 +67,50 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* ── Light Mode (Default Root) ────────────────────────────────────────── */
 :root {
+  --radius: 0.5rem;
+  --background: oklch(0.985 0.005 240);
+  --foreground: oklch(0.18 0.02 260);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.18 0.02 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.18 0.02 260);
+  --primary: oklch(0.55 0.2 245);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.94 0.01 240);
+  --secondary-foreground: oklch(0.2 0.02 260);
+  --muted: oklch(0.94 0.01 240);
+  --muted-foreground: oklch(0.48 0.02 255);
+  --accent: oklch(0.93 0.02 240);
+  --accent-foreground: oklch(0.18 0.02 260);
+  --destructive: oklch(0.58 0.22 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  --success: oklch(0.58 0.17 150);
+  --warning: oklch(0.68 0.17 75);
+  --critical: oklch(0.58 0.22 25);
+  --info: oklch(0.55 0.19 250);
+  --border: oklch(0 0 0 / 10%);
+  --input: oklch(0 0 0 / 12%);
+  --ring: oklch(0.55 0.2 245);
+  --chart-1: oklch(0.55 0.2 245);
+  --chart-2: oklch(0.55 0.19 250);
+  --chart-3: oklch(0.68 0.17 75);
+  --chart-4: oklch(0.58 0.22 25);
+  --chart-5: oklch(0.58 0.17 150);
+  --sidebar: oklch(0.97 0.008 240);
+  --sidebar-foreground: oklch(0.25 0.02 260);
+  --sidebar-primary: oklch(0.55 0.2 245);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.92 0.015 240);
+  --sidebar-accent-foreground: oklch(0.15 0.02 260);
+  --sidebar-border: oklch(0 0 0 / 8%);
+  --sidebar-ring: oklch(0.55 0.2 245);
+  --glow-primary: 0 0 0 1px color-mix(in oklab, var(--primary) 25%, transparent), 0 8px 24px -8px color-mix(in oklab, var(--primary) 30%, transparent);
+}
+
+/* ── Dark Mode ────────────────────────────────────────────────────────── */
+.dark {
   --radius: 0.5rem;
   --background: oklch(0.155 0.025 262);
   --foreground: oklch(0.96 0.008 250);
@@ -128,6 +159,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 }
 
