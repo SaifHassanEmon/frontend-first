@@ -3,25 +3,23 @@ import { useState, useMemo } from "react";
 import {
   Factory,
   Search,
-  SlidersHorizontal,
   AlertTriangle,
   CheckCircle2,
-  Clock,
   ShieldAlert,
-  ArrowUpRight,
   FileCheck2,
-  Building2,
   MapPin,
   ExternalLink,
   ChevronRight,
-  X,
-  Plus,
   FileDown,
+  Loader2,
+  ShieldCheck,
+  FileText,
 } from "lucide-react";
 import { PageHeader, DemoTag, RiskBadge, StatusBadge, Confidence, Panel, KpiCard } from "@/components/app/ui";
 import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 import { useSuppliers } from "@/lib/db";
+import { useGleifByLei, useEdgarFilings } from "@/hooks/useExternalData";
 import type { DetailedSupplier } from "@/data/suppliers-detail";
 
 export const Route = createFileRoute("/suppliers")({
@@ -29,6 +27,66 @@ export const Route = createFileRoute("/suppliers")({
   component: SupplierIntelligencePage,
 });
 
+function GleifBadge({ lei }: { lei: string }) {
+  const { data, isLoading, isError } = useGleifByLei(lei);
+  if (isLoading) return (
+    <div className="flex items-center gap-1.5 rounded border border-border bg-muted/20 p-2.5 text-xs text-muted-foreground">
+      <Loader2 className="size-3.5 animate-spin" /> Verifying LEI with GLEIF...
+    </div>
+  );
+  if (isError || !data) return (
+    <div className="rounded border border-warning/30 bg-warning/8 p-2.5 text-xs text-warning">
+      LEI not found in GLEIF registry
+    </div>
+  );
+  const isActive = data.registrationStatus === "ISSUED";
+  const cls = isActive ? "border-success/30 bg-success/8" : "border-warning/30 bg-warning/8";
+  const iconCls = isActive ? "text-success" : "text-warning";
+  const textCls = isActive ? "text-success" : "text-warning";
+  return (
+    <div className={"rounded border p-2.5 text-xs " + cls}>
+      <div className="flex items-center gap-1.5 font-semibold mb-1">
+        <ShieldCheck className={"size-3.5 " + iconCls} />
+        <span className={textCls}>
+          GLEIF LEI — {isActive ? "Active / Issued" : data.registrationStatus}
+        </span>
+      </div>
+      <p className="font-mono text-[10px] text-muted-foreground">{lei}</p>
+      <p className="mt-0.5 text-[11px] text-foreground">{data.name}</p>
+      <p className="text-[11px] text-muted-foreground">{data.legalAddress?.city}, {data.legalAddress?.country}</p>
+    </div>
+  );
+}
+
+function EdgarBadge({ company }: { company: string }) {
+  const { data: filings = [], isLoading } = useEdgarFilings(company);
+  if (isLoading) {
+    return (
+      <div className="flex items-center gap-1.5 rounded border border-border bg-muted/20 p-2.5 text-xs text-muted-foreground">
+        <Loader2 className="size-3.5 animate-spin" /> Querying SEC EDGAR database...
+      </div>
+    );
+  }
+  if (!filings || filings.length === 0) return null;
+  const latest = filings[0];
+  return (
+    <div className="rounded border border-primary/30 bg-primary/8 p-2.5 text-xs">
+      <div className="flex items-center justify-between mb-1">
+        <span className="flex items-center gap-1 font-semibold text-primary">
+          <FileText className="size-3.5" /> SEC EDGAR Regulatory Filing
+        </span>
+        <span className="rounded bg-primary/20 px-1.5 py-0.2 font-mono text-[10px] font-medium text-primary">
+          {latest.form}
+        </span>
+      </div>
+      <p className="font-medium text-[11px] text-foreground line-clamp-1">{latest.entity_name}</p>
+      <div className="mt-1 flex items-center justify-between font-mono text-[10px] text-muted-foreground">
+        <span>Filed: {latest.file_date}</span>
+        {latest.cik && <span>CIK: {latest.cik}</span>}
+      </div>
+    </div>
+  );
+}
 
 function SupplierIntelligencePage() {
   const [search, setSearch] = useState("");
@@ -120,7 +178,7 @@ function SupplierIntelligencePage() {
             <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search supplier, location, category…"
+              placeholder="Search supplier, location, category..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-8 w-full rounded-md border border-input bg-background pl-8 pr-3 text-xs outline-none focus:border-primary"
@@ -200,7 +258,7 @@ function SupplierIntelligencePage() {
               <thead className="border-b border-border bg-muted/40 text-[11px] uppercase tracking-wider text-muted-foreground">
                 <tr>
                   <th className="px-4 py-3 font-medium">Supplier Entity</th>
-                  <th className="px-4 py-3 font-medium">Tier & Category</th>
+                  <th className="px-4 py-3 font-medium">Tier &amp; Category</th>
                   <th className="px-4 py-3 font-medium">Location</th>
                   <th className="px-4 py-3 font-medium">Risk Score</th>
                   <th className="px-4 py-3 font-medium">Compliance</th>
@@ -361,6 +419,14 @@ function SupplierIntelligencePage() {
               <div className="rounded border border-border bg-muted/30 p-2.5 text-xs">
                 <span className="text-muted-foreground font-medium">Intelligence Notes:</span>
                 <p className="mt-1 text-muted-foreground leading-relaxed">{activeSupplier.notes}</p>
+              </div>
+
+              {/* Real External Registries & Intelligence */}
+              <div className="space-y-2">
+                {activeSupplier.leiCode && activeSupplier.leiCode.length === 20 && (
+                  <GleifBadge lei={activeSupplier.leiCode} />
+                )}
+                <EdgarBadge company={activeSupplier.name} />
               </div>
 
               {/* Actions */}

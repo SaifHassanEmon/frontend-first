@@ -7,18 +7,18 @@ import {
   Wind,
   Flame,
   Globe2,
-  Calendar,
   Clock,
   ArrowRight,
-  ShieldAlert,
   Search,
-  Filter,
-  CheckCircle2,
   Navigation,
+  TrendingUp,
+  Loader2,
+  Layers,
 } from "lucide-react";
 import { PageHeader, DemoTag, RiskBadge, Panel, KpiCard, sevColor } from "@/components/app/ui";
 import { LazyMap } from "@/components/app/LazyMap";
-import { disruptionEvents, type Severity } from "@/data/mock";
+import { disruptionEvents } from "@/data/mock";
+import { useComtradeData } from "@/hooks/useExternalData";
 import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +33,66 @@ const eventIcons: Record<string, typeof CloudLightning> = {
   "Geopolitical Disruption": Globe2,
   "Supplier Shutdown": Flame,
 };
+
+function UnComtradeFlowPanel() {
+  const { data: records = [], isLoading } = useComtradeData();
+
+  return (
+    <Panel
+      title={
+        <span className="flex items-center gap-2">
+          <Layers className="size-4 text-primary" />
+          <span>UN Comtrade — Global Semiconductor &amp; Electronics Trade Baseline (HS 8542)</span>
+        </span>
+      }
+      action={
+        <span className="flex items-center gap-1.5 rounded border border-success/30 bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">
+          <span className="size-1.5 rounded-full bg-success animate-pulse" />
+          UN Comtrade Plus API
+        </span>
+      }
+    >
+      <div className="space-y-3">
+        <p className="text-xs text-muted-foreground">
+          Official United Nations Comtrade annual trade flow volume for electrical components, microassemblies, and high-frequency connectors through primary manufacturing corridors.
+        </p>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center gap-2 py-6 text-xs text-muted-foreground">
+            <Loader2 className="size-3.5 animate-spin" /> Querying UN Comtrade preview database...
+          </div>
+        ) : (
+          <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+            {records.map((r, i) => (
+              <div
+                key={r.partnerDesc + i}
+                className="rounded-md border border-border bg-muted/20 p-3 text-xs"
+              >
+                <div className="flex items-center justify-between text-muted-foreground">
+                  <span className="font-mono text-[10px] uppercase">{r.flowDesc} · Period {r.period}</span>
+                  <span className="font-mono text-[10px] text-primary">HS {r.cmdCode}</span>
+                </div>
+                <div className="mt-1 flex items-baseline justify-between">
+                  <span className="font-semibold text-foreground text-sm">{r.partnerDesc}</span>
+                  <span className="font-mono font-bold text-foreground">
+                    ${(r.primaryValue / 1e9).toFixed(2)}B
+                  </span>
+                </div>
+                <p className="mt-1 line-clamp-1 text-[11px] text-muted-foreground">{r.cmdDesc}</p>
+                <div className="mt-2 flex items-center justify-between border-t border-border/50 pt-1.5 text-[10px] text-muted-foreground">
+                  <span>Corridor Baseline Status</span>
+                  <span className="flex items-center gap-1 text-success">
+                    <TrendingUp className="size-2.5" /> High-volume active
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </Panel>
+  );
+}
 
 function DisruptionIntelligencePage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
@@ -80,7 +140,7 @@ function DisruptionIntelligencePage() {
       <PageHeader
         title="Disruption Intelligence"
         subtitle="Real-time maritime corridors, weather anomalies, geopolitical chokepoints, and plant shutdowns."
-        actions={<DemoTag label="Logistics & Freight Telemetry" />}
+        actions={<DemoTag label="Logistics &amp; Freight Telemetry" />}
       />
 
       {/* KPI Cards */}
@@ -121,7 +181,7 @@ function DisruptionIntelligencePage() {
 
       {/* Interactive Map of Disruptions */}
       <Panel
-        title="Disruption Chokepoints & Corridor Tracking"
+        title="Disruption Chokepoints &amp; Corridor Tracking"
         bodyClass="p-0"
         action={
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
@@ -149,6 +209,9 @@ function DisruptionIntelligencePage() {
         </div>
       </Panel>
 
+      {/* Live UN Comtrade Corridor Flow Section */}
+      <UnComtradeFlowPanel />
+
       {/* Search and Category Filters */}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card p-3">
         <div className="flex flex-1 flex-wrap items-center gap-2">
@@ -156,7 +219,7 @@ function DisruptionIntelligencePage() {
             <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search disruption event, location, supplier…"
+              placeholder="Search disruption event, location, supplier..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-8 w-full rounded-md border border-input bg-background pl-8 pr-3 text-xs outline-none focus:border-primary"
@@ -325,7 +388,7 @@ function DisruptionIntelligencePage() {
                     onClick={() => alert(`Logistics escalation alert sent to Freight Operations for ${activeEvent.title}.`)}
                     className="flex w-full items-center justify-center gap-1.5 rounded-md bg-primary py-2 text-xs font-medium text-primary-foreground hover:bg-primary/90"
                   >
-                    Notify Logistics & Carriers
+                    Notify Logistics &amp; Carriers
                   </button>
                 </div>
               </div>

@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+﻿import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import {
   ScanSearch,
@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { PageHeader, DemoTag, RiskBadge, StatusBadge, Confidence, Panel, KpiCard } from "@/components/app/ui";
 import { useCounterfeits, useUpdateCounterfeitStatus } from "@/lib/db";
+import { useGs1Verify } from "@/hooks/useExternalData";
+import { Loader2, ShieldCheck, ShieldX } from "lucide-react";
 import { type CounterfeitListing } from "@/data/mock";
 import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -26,6 +28,27 @@ export const Route = createFileRoute("/counterfeit")({
   head: () => seo("Counterfeit Detection", "Marketplace anomalies, GTIN collisions, and physical component discrepancies."),
   component: CounterfeitDetectionPage,
 });
+
+function Gs1VerifyBadge({ gtin }: { gtin: string }) {
+  const cleanGtin = gtin.replace(/[^0-9]/g, "");
+  const { data, isLoading } = useGs1Verify(cleanGtin);
+  if (isLoading) return (
+    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+      <Loader2 className="size-3 animate-spin" /> Verifying with GS1...
+    </div>
+  );
+  if (!data) return null;
+  const cls = data.verified ? "bg-success/10 text-success" : "bg-critical/10 text-critical";
+  const label = data.verified
+    ? ("Valid — " + (data.gs1Company || data.licensedTo || "Licensed"))
+    : "INVALID / Not found in GS1 registry";
+  return (
+    <div className={"mt-1 flex items-center gap-1.5 rounded px-1.5 py-0.5 text-[11px] font-medium " + cls}>
+      {data.verified ? <ShieldCheck className="size-3" /> : <ShieldX className="size-3" />}
+      GS1 Verified by GS1: {label}
+    </div>
+  );
+}
 
 function CounterfeitDetectionPage() {
   const { data: counterfeitListings = [] } = useCounterfeits();

@@ -1,21 +1,17 @@
-import { createFileRoute } from "@tanstack/react-router";
+﻿import { createFileRoute } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import {
   Database,
-  CheckCircle2,
   RefreshCw,
   Search,
-  ExternalLink,
-  Plus,
   Radio,
   Server,
   Activity,
-  ArrowUpRight,
   ShieldCheck,
-  Zap,
 } from "lucide-react";
 import { PageHeader, DemoTag, Panel, KpiCard } from "@/components/app/ui";
 import { dataSources } from "@/data/mock";
+import { useConnectorHealth } from "@/hooks/useExternalData";
 import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -47,6 +43,7 @@ const sourceMeta: Record<string, DataSourceMeta> = {
 };
 
 function DataSourcesPage() {
+  const { connectors: liveConnectors } = useConnectorHealth();
   const [search, setSearch] = useState("");
   const [selectedDomain, setSelectedDomain] = useState<string>("ALL");
   const [syncingAll, setSyncingAll] = useState(false);
@@ -88,154 +85,114 @@ function DataSourcesPage() {
               className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
             >
               <RefreshCw className={cn("size-3.5", syncingAll && "animate-spin")} />
-              {syncingAll ? "Syncing Feeds…" : "Trigger Global Sync"}
+              {syncingAll ? "Syncing Feeds..." : "Trigger Global Sync"}
             </button>
           </div>
         }
       />
 
-      {/* KPI Cards */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <KpiCard
-          label="Active Feed Connectors"
-          value="11 Pipelines"
-          trend="All Healthy"
-          up={false}
-          icon={Database}
-          tone="primary"
-        />
-        <KpiCard
-          label="Ingested Telemetry"
-          value="6.8M Records"
-          trend="+142k today"
-          up={true}
-          icon={Server}
-          tone="info"
-        />
-        <KpiCard
-          label="Pipeline Uptime"
-          value="99.94%"
-          trend="0 downtime"
-          up={false}
-          icon={ShieldCheck}
-          tone="success"
-        />
-        <KpiCard
-          label="Avg Pipeline Latency"
-          value="158 ms"
-          trend="-12ms"
-          up={false}
-          icon={Activity}
-          tone="success"
-        />
+        <KpiCard label="Active Feed Connectors" value="11 Pipelines" trend="All Healthy" up={false} icon={Database} tone="primary" />
+        <KpiCard label="Ingested Telemetry" value="6.8M Records" trend="+142k today" up={true} icon={Server} tone="info" />
+        <KpiCard label="Pipeline Uptime" value="99.94%" trend="0 downtime" up={false} icon={ShieldCheck} tone="success" />
+        <KpiCard label="Avg Pipeline Latency" value="158 ms" trend="-12ms" up={false} icon={Activity} tone="success" />
       </div>
 
-      {/* Filter and Search Ribbon */}
+      {liveConnectors.length > 0 && (
+        <div className="rounded-lg border border-border bg-card p-3">
+          <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">Live API Health</p>
+          <div className="flex flex-wrap gap-2">
+            {liveConnectors.map((c) => (
+              <span key={c.name} className={cn(
+                "flex items-center gap-1.5 rounded border px-2 py-1 text-[11px] font-medium",
+                c.status === "live" && "border-success/30 bg-success/10 text-success",
+                c.status === "loading" && "border-muted/30 bg-muted/20 text-muted-foreground",
+                c.status === "error" && "border-critical/30 bg-critical/10 text-critical"
+              )}>
+                <span className={cn(
+                  "size-1.5 rounded-full",
+                  c.status === "live" && "bg-success animate-pulse",
+                  c.status === "loading" && "bg-muted-foreground",
+                  c.status === "error" && "bg-critical"
+                )} />
+                {c.name}
+                {c.status === "live" && c.total ? " (" + c.total.toLocaleString() + " total)" : ""}
+                {c.status === "live" && c.recordCount ? " (" + c.recordCount + " returned)" : ""}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card p-3">
         <div className="flex flex-1 flex-wrap items-center gap-2">
           <div className="relative min-w-[220px] flex-1 sm:max-w-xs">
             <Search className="absolute left-2.5 top-2.5 size-3.5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search feed, registry, agency…"
+              placeholder="Search feed, registry, agency..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="h-8 w-full rounded-md border border-input bg-background pl-8 pr-3 text-xs outline-none focus:border-primary"
             />
           </div>
-
           <div className="flex items-center gap-1 text-xs">
             <span className="text-muted-foreground">Domain:</span>
             {["ALL", "Product Recall", "Counterfeit", "Supplier Risk", "Disruption"].map((d) => (
-              <button
-                key={d}
-                onClick={() => setSelectedDomain(d)}
-                className={cn(
-                  "rounded px-2.5 py-1 text-[11px] font-medium transition-colors",
-                  selectedDomain === d
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:text-foreground"
-                )}
-              >
+              <button key={d} onClick={() => setSelectedDomain(d)} className={cn(
+                "rounded px-2.5 py-1 text-[11px] font-medium transition-colors",
+                selectedDomain === d ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:text-foreground"
+              )}>
                 {d === "ALL" ? "All" : d}
               </button>
             ))}
           </div>
         </div>
-
         {(search || selectedDomain !== "ALL") && (
-          <button
-            onClick={() => {
-              setSearch("");
-              setSelectedDomain("ALL");
-            }}
-            className="text-xs text-muted-foreground hover:text-foreground"
-          >
+          <button onClick={() => { setSearch(""); setSelectedDomain("ALL"); }} className="text-xs text-muted-foreground hover:text-foreground">
             Clear filters
           </button>
         )}
       </div>
 
-      {/* Connectors Grid */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {filteredSources.map((src) => {
-          const meta = sourceMeta[src.name] ?? {
-            syncFrequency: "Hourly",
-            lastSync: "15 min ago",
-            recordCount: "50,000",
-            latencyMs: 160,
-            status: "Operational",
-          };
-
+          const meta = sourceMeta[src.name] ?? { syncFrequency: "Hourly", lastSync: "15 min ago", recordCount: "50,000", latencyMs: 160, status: "Operational" as const };
+          const live = liveConnectors.find((c) => src.name.includes(c.name) || c.name.includes(src.name));
           return (
-            <div
-              key={src.name}
-              className="flex flex-col justify-between rounded-lg border border-border bg-card p-4 transition-all duration-200 hover:border-primary/50 fade-up"
-            >
+            <div key={src.name} className="flex flex-col justify-between rounded-lg border border-border bg-card p-4 transition-all duration-200 hover:border-primary/50 fade-up">
               <div>
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
-                      {src.type}
-                    </span>
+                    <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">{src.type}</span>
                     <h3 className="mt-1.5 text-sm font-semibold text-foreground">{src.name}</h3>
                   </div>
-                  <span className="flex items-center gap-1 rounded border border-success/30 bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">
-                    <span className="size-1.5 rounded-full bg-success animate-pulse" />
-                    {meta.status}
-                  </span>
+                  {live?.status === "loading" ? (
+                    <span className="flex items-center gap-1 rounded border border-muted/40 bg-muted/20 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+                      <span className="size-1.5 rounded-full bg-muted-foreground animate-pulse" />Connecting...
+                    </span>
+                  ) : live?.status === "error" ? (
+                    <span className="flex items-center gap-1 rounded border border-warning/30 bg-warning/10 px-2 py-0.5 text-[11px] font-medium text-warning">
+                      <span className="size-1.5 rounded-full bg-warning" />Degraded
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1 rounded border border-success/30 bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">
+                      <span className="size-1.5 rounded-full bg-success animate-pulse" />
+                      {live?.status === "live" ? "Live" : meta.status}
+                    </span>
+                  )}
                 </div>
-
                 <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{src.desc}</p>
-
                 <div className="mt-4 grid grid-cols-2 gap-2 rounded border border-border bg-muted/20 p-2.5 text-xs">
-                  <div>
-                    <span className="text-[10px] uppercase text-muted-foreground">Frequency</span>
-                    <p className="font-mono text-[11px] font-medium">{meta.syncFrequency}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase text-muted-foreground">Last Synced</span>
-                    <p className="font-mono text-[11px] font-medium">{meta.lastSync}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase text-muted-foreground">Records</span>
-                    <p className="font-mono text-[11px] font-medium">{meta.recordCount}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase text-muted-foreground">API Latency</span>
-                    <p className="font-mono text-[11px] font-medium text-success">{meta.latencyMs} ms</p>
-                  </div>
+                  <div><span className="text-[10px] uppercase text-muted-foreground">Frequency</span><p className="font-mono text-[11px] font-medium">{meta.syncFrequency}</p></div>
+                  <div><span className="text-[10px] uppercase text-muted-foreground">Last Synced</span><p className="font-mono text-[11px] font-medium">{meta.lastSync}</p></div>
+                  <div><span className="text-[10px] uppercase text-muted-foreground">Records</span><p className="font-mono text-[11px] font-medium">{live?.total ? live.total.toLocaleString() + "+" : meta.recordCount}</p></div>
+                  <div><span className="text-[10px] uppercase text-muted-foreground">API Latency</span><p className="font-mono text-[11px] font-medium text-success">{meta.latencyMs} ms</p></div>
                 </div>
               </div>
-
               <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-xs">
-                <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">
-                  {src.domain}
-                </span>
-                <button
-                  onClick={() => alert(`Connection ping test to ${src.name} returned 200 OK (${meta.latencyMs}ms)`)}
-                  className="flex items-center gap-1 font-medium text-primary hover:underline text-[11px]"
-                >
+                <span className="rounded bg-primary/10 px-1.5 py-0.5 text-[10px] font-medium text-primary">{src.domain}</span>
+                <button onClick={() => alert("Connection ping test to " + src.name + " returned 200 OK (" + meta.latencyMs + "ms)")} className="flex items-center gap-1 font-medium text-primary hover:underline text-[11px]">
                   <Radio className="size-3" /> Test Connection
                 </button>
               </div>
