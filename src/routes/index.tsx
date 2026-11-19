@@ -5,7 +5,7 @@ import { KpiCard, Panel, PageHeader, RiskBadge, StatusBadge, Confidence, sevColo
 import { LazyMap } from "@/components/app/LazyMap";
 import { RiskDonut } from "@/components/app/RiskDonut";
 import { kpis, mapMarkers, signals, timeline } from "@/data/mock";
-import { useApp } from "@/lib/store";
+import { useInvestigations } from "@/lib/db";
 import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
 const icons = [Activity, AlertOctagon, Boxes, Factory, EyeOff];
 
 function Overview() {
-  const invs = useApp((s) => s.investigations);
+  const { data: invs = [] } = useInvestigations();
   const [sel, setSel] = useState<string | null>(null);
   const points = useMemo(() => mapMarkers.map((m) => ({ id: m.id, lng: m.lng, lat: m.lat, color: sevColor[m.severity], label: m.name, sub: `${m.country} · ${m.domain}`, pulse: m.severity === "critical" })), []);
   const selected = mapMarkers.find((m) => m.id === sel);

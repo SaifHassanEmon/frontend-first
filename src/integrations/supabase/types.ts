@@ -14,7 +14,228 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      counterfeit_listings: {
+        Row: {
+          anomalies: string[]
+          confidence: number
+          created_at: string
+          date_detected: string
+          evidence_ref: string
+          gtin: string
+          id: string
+          platform: string
+          price_delta: string
+          region: string
+          seller: string
+          sku: string
+          status: string
+          target_product: string
+        }
+        Insert: {
+          anomalies?: string[]
+          confidence?: number
+          created_at?: string
+          date_detected?: string
+          evidence_ref?: string
+          gtin?: string
+          id: string
+          platform?: string
+          price_delta?: string
+          region?: string
+          seller?: string
+          sku?: string
+          status?: string
+          target_product: string
+        }
+        Update: {
+          anomalies?: string[]
+          confidence?: number
+          created_at?: string
+          date_detected?: string
+          evidence_ref?: string
+          gtin?: string
+          id?: string
+          platform?: string
+          price_delta?: string
+          region?: string
+          seller?: string
+          sku?: string
+          status?: string
+          target_product?: string
+        }
+        Relationships: []
+      }
+      evidence: {
+        Row: {
+          confidence: number
+          created_at: string
+          date: string
+          entity: string
+          id: string
+          investigation: string
+          name: string
+          source: string
+          status: string
+          text: string
+          type: string
+          url: string
+        }
+        Insert: {
+          confidence?: number
+          created_at?: string
+          date?: string
+          entity?: string
+          id: string
+          investigation?: string
+          name: string
+          source?: string
+          status?: string
+          text?: string
+          type?: string
+          url?: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          date?: string
+          entity?: string
+          id?: string
+          investigation?: string
+          name?: string
+          source?: string
+          status?: string
+          text?: string
+          type?: string
+          url?: string
+        }
+        Relationships: []
+      }
+      investigations: {
+        Row: {
+          confidence: number
+          created_at: string
+          date: string
+          description: string | null
+          domain: string
+          evidence: number
+          id: string
+          identifier: string | null
+          risk_score: number
+          severity: string
+          status: string
+          title: string
+        }
+        Insert: {
+          confidence?: number
+          created_at?: string
+          date?: string
+          description?: string | null
+          domain: string
+          evidence?: number
+          id: string
+          identifier?: string | null
+          risk_score?: number
+          severity?: string
+          status?: string
+          title: string
+        }
+        Update: {
+          confidence?: number
+          created_at?: string
+          date?: string
+          description?: string | null
+          domain?: string
+          evidence?: number
+          id?: string
+          identifier?: string | null
+          risk_score?: number
+          severity?: string
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      recall_match_decisions: {
+        Row: {
+          decision: string
+          match_id: string
+          updated_at: string
+        }
+        Insert: {
+          decision: string
+          match_id: string
+          updated_at?: string
+        }
+        Update: {
+          decision?: string
+          match_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      suppliers: {
+        Row: {
+          category: string
+          certifications: string[]
+          city: string
+          country: string
+          created_at: string
+          downstream_products: string[]
+          esg_score: number
+          id: string
+          last_audit_date: string
+          lead_time_days: number
+          lei_code: string
+          name: string
+          notes: string
+          risk: number
+          severity: string
+          single_source: boolean
+          status: string
+          tier: number
+        }
+        Insert: {
+          category?: string
+          certifications?: string[]
+          city?: string
+          country: string
+          created_at?: string
+          downstream_products?: string[]
+          esg_score?: number
+          id: string
+          last_audit_date?: string
+          lead_time_days?: number
+          lei_code?: string
+          name: string
+          notes?: string
+          risk?: number
+          severity?: string
+          single_source?: boolean
+          status?: string
+          tier?: number
+        }
+        Update: {
+          category?: string
+          certifications?: string[]
+          city?: string
+          country?: string
+          created_at?: string
+          downstream_products?: string[]
+          esg_score?: number
+          id?: string
+          last_audit_date?: string
+          lead_time_days?: number
+          lei_code?: string
+          name?: string
+          notes?: string
+          risk?: number
+          severity?: string
+          single_source?: boolean
+          status?: string
+          tier?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

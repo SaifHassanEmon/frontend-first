@@ -17,7 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { PageHeader, DemoTag, RiskBadge, StatusBadge, Confidence, Panel, KpiCard } from "@/components/app/ui";
-import { useApp } from "@/lib/store";
+import { useCounterfeits, useUpdateCounterfeitStatus } from "@/lib/db";
 import { type CounterfeitListing } from "@/data/mock";
 import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -28,12 +28,15 @@ export const Route = createFileRoute("/counterfeit")({
 });
 
 function CounterfeitDetectionPage() {
-  const counterfeitListings = useApp((s) => s.counterfeits);
-  const updateStatus = useApp((s) => s.updateCounterfeitStatus);
+  const { data: counterfeitListings = [] } = useCounterfeits();
+  const updateStatusMutation = useUpdateCounterfeitStatus();
+  const updateStatus = (id: string, status: CounterfeitListing["status"]) => updateStatusMutation.mutate({ id, status });
 
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-  const [activeItem, setActiveItem] = useState<CounterfeitListing | null>(counterfeitListings[0] ?? null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const activeItem = counterfeitListings.find((c) => c.id === activeId) ?? counterfeitListings[0] ?? null;
+  const setActiveItem = (c: CounterfeitListing) => setActiveId(c.id);
 
   const filteredListings = useMemo(() => {
     return counterfeitListings.filter((c) => {

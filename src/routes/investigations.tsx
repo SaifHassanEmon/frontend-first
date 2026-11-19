@@ -4,7 +4,7 @@ import { Plus, Search, FileText, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { PageHeader, RiskBadge, StatusBadge, Chip, Confidence, EmptyState, DemoTag } from "@/components/app/ui";
-import { useApp } from "@/lib/store";
+import { useInvestigations, useAddInvestigation, nextInvestigationId } from "@/lib/db";
 import type { Domain, Investigation, Severity, Status } from "@/data/mock";
 import { seo } from "@/lib/seo";
 import { toast } from "sonner";
@@ -19,7 +19,8 @@ const sevs: Severity[] = ["critical", "high", "medium", "low"];
 const statuses: Status[] = ["Open", "In Review", "Escalated", "Resolved"];
 
 function Page() {
-  const { investigations, addInvestigation, notify } = useApp();
+  const { data: investigations = [], isLoading } = useInvestigations();
+  const addInvestigation = useAddInvestigation();
   const [q, setQ] = useState(""); const [d, setD] = useState<Domain | null>(null); const [s, setS] = useState<Severity | null>(null); const [st, setSt] = useState<Status | null>(null);
   const [open, setOpen] = useState(false); const [result, setResult] = useState<Investigation | null>(null);
   const [form, setForm] = useState({ name: "", domain: "Product Recall" as Domain, identifier: "", description: "" });
@@ -31,15 +32,18 @@ function Page() {
     setRunning(true);
     setTimeout(() => {
       const score = 55 + ((form.name.length * 7) % 40);
-      const inv: Investigation = { id: `INV-2026-${String(129 + investigations.length - 8).padStart(4, "0")}`, title: form.name, domain: form.domain, identifier: form.identifier, description: form.description, severity: score > 85 ? "critical" : score > 70 ? "high" : "medium", confidence: 60 + (score % 30), status: "Open", date: new Date().toISOString().slice(0, 10), riskScore: score, evidence: 3 + (score % 12) };
-      addInvestigation(inv); notify(`New investigation created: ${inv.id}`); setRunning(false); setOpen(false); setResult(inv);
-      setForm({ name: "", domain: "Product Recall", identifier: "", description: "" });
+      const inv: Investigation = { id: nextInvestigationId(investigations), title: form.name, domain: form.domain, identifier: form.identifier, description: form.description, severity: score > 85 ? "critical" : score > 70 ? "high" : "medium", confidence: 60 + (score % 30), status: "Open", date: new Date().toISOString().slice(0, 10), riskScore: score, evidence: 3 + (score % 12) };
+      addInvestigation.mutate(inv, {
+        onSuccess: () => { setOpen(false); setResult(inv); setForm({ name: "", domain: "Product Recall", identifier: "", description: "" }); },
+        onError: (err) => toast.error(`Could not save investigation: ${err.message}`),
+        onSettled: () => setRunning(false),
+      });
     }, 1200);
   };
 
   return (
     <div className="mx-auto max-w-[1400px]">
-      <PageHeader title="Investigation Center" subtitle={`${investigations.length} investigations in workspace`} actions={<Button onClick={() => setOpen(true)}><Plus />New Investigation</Button>} />
+      <PageHeader title="Investigation Center" subtitle={isLoading ? "Loading investigations…" : `${investigations.length} investigations in workspace`} actions={<Button onClick={() => setOpen(true)}><Plus />New Investigation</Button>} />
       <div className="mb-4 space-y-3 rounded-lg border border-border bg-card p-3">
         <div className="relative max-w-sm"><Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search investigations" className="h-8 w-full rounded-md border border-input bg-background pl-8 text-xs outline-none focus:border-primary/50" /></div>
         <div className="flex flex-wrap items-center gap-1.5 text-xs"><span className="w-16 text-muted-foreground">Domain</span><Chip active={!d} onClick={() => setD(null)}>All</Chip>{domains.map((x) => <Chip key={x} active={d === x} onClick={() => setD(x)}>{x}</Chip>)}</div>

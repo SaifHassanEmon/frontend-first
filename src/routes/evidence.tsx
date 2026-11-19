@@ -16,7 +16,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { PageHeader, DemoTag, StatusBadge, Confidence, Panel, KpiCard } from "@/components/app/ui";
-import { useApp } from "@/lib/store";
+import { useEvidence, useVerifyEvidence, type EvidenceItem } from "@/lib/db";
 import { seo } from "@/lib/seo";
 import { cn } from "@/lib/utils";
 
@@ -26,13 +26,16 @@ export const Route = createFileRoute("/evidence")({
 });
 
 function EvidenceExplorerPage() {
-  const evidenceList = useApp((s) => s.evidence);
-  const verifyEvidence = useApp((s) => s.verifyEvidence);
+  const { data: evidenceList = [] } = useEvidence();
+  const verifyMutation = useVerifyEvidence();
+  const verifyEvidence = (id: string) => verifyMutation.mutate(id);
 
   const [search, setSearch] = useState("");
   const [selectedType, setSelectedType] = useState<string>("ALL");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
-  const [activeItem, setActiveItem] = useState<(typeof evidenceList)[number] | null>(evidenceList[0] ?? null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const activeItem = evidenceList.find((e) => e.id === activeId) ?? evidenceList[0] ?? null;
+  const setActiveItem = (e: EvidenceItem) => setActiveId(e.id);
 
   const docTypes = useMemo(() => {
     return ["ALL", ...Array.from(new Set(evidenceList.map((e) => e.type)))];

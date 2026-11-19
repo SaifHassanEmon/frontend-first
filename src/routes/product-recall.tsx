@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Confidence, DemoTag, KpiCard, PageHeader, Panel, StatusBadge } from "@/components/app/ui";
 import { recallMatches, evidence } from "@/data/mock";
-import { useApp } from "@/lib/store";
+import { useMatchDecisions, useDecideMatch, type MatchDecision } from "@/lib/db";
 import { seo } from "@/lib/seo";
 import { toast } from "sonner";
 
@@ -17,7 +17,9 @@ export const Route = createFileRoute("/product-recall")({
 const identities = ["XZ-100", "XZ100-L", "Portable Battery 100", "Supplier Code BP-77"];
 
 function Page() {
-  const { matchDecisions, decide } = useApp();
+  const { data: matchDecisions = {} } = useMatchDecisions();
+  const decideMutation = useDecideMatch();
+  const decide = (id: string, decision: MatchDecision) => decideMutation.mutate({ id, decision }, { onError: (err) => toast.error(`Could not save decision: ${err.message}`) });
   const [active, setActive] = useState(identities[0]);
   const [sel, setSel] = useState(recallMatches[0]?.id ?? "");
   const m = recallMatches.find((x) => x.id === sel) ?? recallMatches[0]!;
