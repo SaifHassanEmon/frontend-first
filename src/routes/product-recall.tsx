@@ -19,7 +19,7 @@ const identities = ["XZ-100", "XZ100-L", "Portable Battery 100", "Supplier Code 
 function Page() {
   const { matchDecisions, decide } = useApp();
   const [active, setActive] = useState(identities[0]);
-  const [sel, setSel] = useState(recallMatches[0].id);
+  const [sel, setSel] = useState(recallMatches[0]?.id ?? "");
   const m = recallMatches.find((x) => x.id === sel) ?? recallMatches[0]!;
   return (
     <div className="mx-auto max-w-[1400px] space-y-4">

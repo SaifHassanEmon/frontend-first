@@ -399,7 +399,7 @@ function SupplyChainGraphPage() {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node<EntityNodeData>>(initialEntityNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
-  const [selectedNode, setSelectedNode] = useState<EntityNodeData | null>(initialEntityNodes[0].data);
+  const [selectedNode, setSelectedNode] = useState<EntityNodeData | null>(initialEntityNodes[0]?.data ?? null);
   const [tierFilter, setTierFilter] = useState<string>("ALL");
   const [severityFilter, setSeverityFilter] = useState<string>("ALL");
   const [searchQuery, setSearchQuery] = useState("");

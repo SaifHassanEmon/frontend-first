@@ -60,7 +60,7 @@ const reportDetails: Record<string, { summary: string; findings: string[]; recip
 function ReportsPage() {
   const [search, setSearch] = useState("");
   const [selectedDomain, setSelectedDomain] = useState<string>("ALL");
-  const [activeReport, setActiveReport] = useState<ReportItem | null>(reports[0]);
+  const [activeReport, setActiveReport] = useState<ReportItem | null>(reports[0] ?? null);
   const [generating, setGenerating] = useState(false);
 
   const filteredReports = useMemo(() => {

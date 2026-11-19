@@ -189,7 +189,7 @@ function SupplierIntelligencePage() {
   const [selectedTier, setSelectedTier] = useState<number | "ALL">("ALL");
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [singleSourceOnly, setSingleSourceOnly] = useState(false);
-  const [activeSupplier, setActiveSupplier] = useState<DetailedSupplier | null>(suppliersList[0]);
+  const [activeSupplier, setActiveSupplier] = useState<DetailedSupplier | null>(suppliersList[0] ?? null);
 
   const filteredSuppliers = useMemo(() => {
     return suppliersList.filter((s) => {
